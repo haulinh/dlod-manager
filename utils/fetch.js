@@ -1,0 +1,171 @@
+import axios from 'axios';
+
+const getHeaders = () => {
+  var headers = {
+    Accept: 'application/json',
+  };
+  return headers;
+};
+
+export function postFetch(url, data, props) {
+  let attributes = Object.assign(
+    {
+      cache: true,
+      headers: getHeaders(),
+    },
+    props
+  );
+
+  return new Promise((resolve, reject) => {
+    axios
+      .post(url, data, attributes)
+      .then((res) => {
+        // if (res.status === 200) {
+        resolve(res.data);
+        // } else {
+        //   reject({ error: true })
+        // }
+      })
+      .catch((ex) => {
+        const { response = {} } = ex;
+
+        reject({
+          status: response.status,
+          data: response.data,
+        });
+      });
+  });
+}
+
+export function putFetch(url, data, props) {
+  let attributes = Object.assign(
+    {
+      cache: true,
+      headers: getHeaders(),
+    },
+    props
+  );
+
+  return new Promise((resolve, reject) => {
+    axios
+      .put(url, data, attributes)
+      .then((res) => {
+        if (res.status === 200) {
+          resolve(res.data);
+        } else {
+          reject({ error: true });
+        }
+      })
+      .catch((e) => reject(e));
+  });
+}
+
+export function pathFetch(url, data, props) {
+  let attributes = Object.assign(
+    {
+      cache: true,
+      headers: getHeaders(),
+    },
+    props
+  );
+
+  return new Promise((resolve, reject) => {
+    axios
+      .patch(url, data, attributes)
+      .then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          resolve(res.data);
+        } else {
+          reject({ error: true });
+        }
+      })
+      .catch((ex) => {
+        const { response } = ex;
+
+        reject({
+          status: response.status,
+          data: response.data,
+        });
+      });
+  });
+}
+
+export function getFetch(url, data, props) {
+  console.log('url', url);
+  let attributes = Object.assign(
+    {
+      headers: getHeaders(),
+      params: data,
+    },
+    props
+  );
+  return new Promise((resolve, reject) => {
+    axios
+      .get(url, attributes)
+      .then((res) => {
+        // if (res.status === 200) {
+        resolve(res.data);
+        // } else {
+        //   reject({ error: true })
+        // }
+      })
+      .catch((e) => reject(e));
+  });
+}
+
+export function getFetchDownFile(url, data, props) {
+  let attributes = Object.assign(
+    {
+      headers: getHeaders(),
+      params: data,
+      responseType: 'blob',
+    },
+    props
+  );
+
+  return axios.get(url, attributes);
+}
+
+export function deleteFetch(url, data, props) {
+  let attributes = Object.assign(
+    {
+      headers: getHeaders(),
+    },
+    props
+  );
+  return new Promise((resolve, reject) => {
+    axios
+      .delete(url, attributes)
+      .then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          resolve(res.data);
+        } else {
+          reject({ error: true });
+        }
+      })
+      .catch((e) => reject(e));
+  });
+}
+
+export function uploadMultipleFile(url, files) {
+  let params = new FormData();
+  files.forEach((file) => {
+    params.append('files', file);
+  });
+
+  return new Promise((resolve, reject) => {
+    axios
+      .create({
+        timeout: 10000,
+      })
+      .post(url, params)
+      .then((result) => {
+        if (result && result.data) {
+          resolve(result.data);
+        } else {
+          reject({ error: true });
+        }
+      })
+      .catch((err) => reject({ error: true, message: err.message }));
+  });
+}
